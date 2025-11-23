@@ -31,3 +31,123 @@ This starter kit uses [Mini Apps UI Kit](https://github.com/worldcoin/mini-apps-
 ## Contributing
 
 This template was made with help from the amazing [supercorp-ai](https://github.com/supercorp-ai) team.
+
+# Nomad Experience Smart Contracts
+
+This repository contains the smart contracts for the Nomad Experience platform, a decentralized system for creating and managing travel experiences.
+
+## 📋 Contracts
+
+### 1. Nomad Experience (`0x7897ba174a1B428a1Cf214b65927Bb51ED654CC6`)
+
+Main contract for managing travel experiences.
+
+#### Core Features
+
+**Experience Creation and Management**
+- `createExperience()` - Creates a new experience
+- `updateExperience()` - Updates experience details
+- `cancelExperience()` - Cancels an experience
+- `getExperience()` - Gets complete experience details
+
+**Participation System**
+- `requestJoin()` - Requests to join an experience (payment required)
+- `approveJoin()` - Approves participation request
+- `rejectJoin()` - Rejects participation request
+- `getJoinRequests()` - Lists pending requests
+- `getParticipants()` - Lists approved participants
+
+**Rating and Reputation**
+- `rateExperience()` - Rates an experience (1-5 stars)
+- `getUserApprovedExperiences()` - User's approved experiences
+- `getUserRequestedExperiences()` - User's requested experiences
+
+#### Experience Structure
+Each experience contains:
+- Title, description, and cover image
+- Location and dates (start/end)
+- Price and maximum participants
+- Status (active/canceled)
+- Participant count and average rating
+
+### 2. Noma Profile Hub (`0x23904296D38a8dD4F3C584B4206618130909a0b4`)
+
+Contract for managing user profiles and reputation.
+
+#### Profile Features
+
+**User Statistics**
+- `hostedCount` - Number of experiences hosted
+- `attendedCount` - Number of experiences attended
+- `lastHostedTimestamp` - Last hosting time
+- `lastJoinedTimestamp` - Last participation time
+
+**Reputation Updates**
+- `incrementHosted()` - Increments hosting counter
+- `incrementAttended()` - Increments attendance counter
+- `getProfile()` - Gets user's complete profile
+
+## 🔗 Contract Integration
+
+The contracts work together:
+- Nomad Experience references Profile Hub in constructor
+- Actions in Experience automatically update statistics in Profile Hub
+- Cross-reputation system between hosting and participation
+
+## 📊 Emitted Events
+
+### Nomad Experience
+- `ExperienceCreated` - New experience created
+- `JoinRequested` - Participation request
+- `JoinApproved`/`JoinRejected` - Approval/Rejection
+- `ExperienceRated` - Rating recorded
+- `Canceled` - Experience canceled
+- `Updated` - Experience updated
+
+### Profile Hub
+- `ProfileCreated` - New profile created
+- `HostedIncremented`/`AttendedIncremented` - Statistics updated
+- `ExperienceCancelled` - Experience canceled
+
+## 🛠 Basic Usage
+
+### Create an Experience
+```javascript
+await nomadExperience.createExperience(
+  "Title",
+  "Description",
+  "image.jpg",
+  startTimestamp,
+  endTimestamp,
+  "Location",
+  price,
+  maxParticipants
+);
+```
+
+### Request to Join
+```javascript
+await nomadExperience.requestJoin(experienceId, { value: price });
+```
+
+### Rate Experience
+```javascript
+await nomadExperience.rateExperience(experienceId, 5); // 1-5 stars
+```
+
+## 🔒 Security
+
+- Access controls for creation and approval
+- Payment validation in `requestJoin()`
+- Duplicate participation prevention
+- Time checks for experiences
+
+## 🌟 Key Features
+
+- **Reputation System**: Track record of hosting and participation
+- **Manual Approval**: Control over participants
+- **Rating System**: Quality rating mechanism
+- **Flexibility**: Experience details can be updated
+- **Transparency**: All data is public on blockchain
+
+This system provides a robust foundation for decentralized travel experience marketplaces, with focus on trust and reputation between users.
