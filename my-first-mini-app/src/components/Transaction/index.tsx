@@ -33,7 +33,7 @@ export const Transaction = () => {
   // Feel free to use your own RPC provider for better performance
   const client = createPublicClient({
     chain: worldchain,
-    transport: http('https://worldchain-mainnet.g.alchemy.com/public'),
+    transport: http('https://worldchain-mainnet.g.alchemy.com/public	'),
   });
 
   const {
@@ -44,7 +44,7 @@ export const Transaction = () => {
   } = useWaitForTransactionReceipt({
     client: client,
     appConfig: {
-      app_id: process.env.WLD_CLIENT_ID as `app_${string}`,
+      app_id: process.env.NEXT_PUBLIC_WLD_CLIENT_ID as `app_${string}`,
     },
     transactionId: transactionId,
   });
