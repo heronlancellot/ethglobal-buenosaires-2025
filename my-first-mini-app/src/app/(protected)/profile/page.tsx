@@ -44,8 +44,9 @@ export default function ProfilePage() {
           return;
         }
 
-        // Fetch profile data from contract
+        // Fetch profile data from contract using getProfile
         const profile = await getUserProfile(userAddress);
+        console.log('Profile data from getProfile:', profile);
         
         // Fetch approved experiences to count unique people met
         const approvedExperiences = await getUserApprovedExperiences(userAddress);
@@ -83,9 +84,13 @@ export default function ProfilePage() {
           },
         ];
 
+        // Use profile data from getProfile (attendedCount from contract)
+        const experiencesCount = profile.exists ? profile.attendedCount : (approvedExperiences.length || 0);
+        const peopleMetCount = profile.exists ? Math.max(profile.attendedCount * 3, 0) : (approvedExperiences.length * 3 || 0);
+
         setProfileData({
-          experiencesCount: profile.attendedCount || approvedExperiences.length || 10,
-          peopleMetCount: profile.attendedCount * 3 || 30, // Estimate: 3 people per experience
+          experiencesCount,
+          peopleMetCount,
           nftGallery: mockNFTs,
           missionProgress: 33, // This could be calculated based on actual mission data
         });
@@ -118,7 +123,7 @@ export default function ProfilePage() {
           {/* White Content Area */}
           <div className="bg-white rounded-t-3xl -mt-8 relative pt-16 pb-6">
             {/* Profile Picture - Overlapping */}
-            <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
+            <div className="absolute -top-16 left-1/2 flex justify-center w-full transform -translate-x-1/2">
               <div className="relative">
                 {profilePicture ? (
                   <Marble 

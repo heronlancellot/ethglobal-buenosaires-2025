@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       "shop.gustoargentino.com"
     ],
   },
-  allowedDevOrigins: ['*'], // Add your dev origin here
+  allowedDevOrigins: ['*.zrok.io', 'localhost', '127.0.0.1'],
   reactStrictMode: false,
 };
 
