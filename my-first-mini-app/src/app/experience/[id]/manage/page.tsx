@@ -2,7 +2,7 @@
 
 import { Page } from '@/components/PageLayout';
 import { Navigation } from '@/components/Navigation';
-import { Marble, TopBar, Button, LiveFeedback } from '@worldcoin/mini-apps-ui-kit-react';
+import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
 import { Pin, QrCode, Check, Xmark } from 'iconoir-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -39,7 +39,6 @@ export default function ExperienceManagePage() {
   const { data: session } = useSession();
   const [experience, setExperience] = useState<ExperienceData | null>(null);
   const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
-  const [approvedParticipants, setApprovedParticipants] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processingAddress, setProcessingAddress] = useState<string | null>(null);
@@ -117,7 +116,6 @@ export default function ExperienceManagePage() {
         }));
 
         setJoinRequests(requestsList);
-        setApprovedParticipants([...participants]);
       } catch (err) {
         console.error('Error fetching data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -148,7 +146,6 @@ export default function ExperienceManagePage() {
             status: participants.includes(addr) ? 'approved' : 'pending',
           }));
           setJoinRequests(requestsList);
-          setApprovedParticipants([...participants]);
         };
         refreshData();
       } else if (isError) {
@@ -250,6 +247,7 @@ export default function ExperienceManagePage() {
 
   const pendingRequests = joinRequests.filter((r) => r.status === 'pending');
   const approvedRequests = joinRequests.filter((r) => r.status === 'approved');
+  // approvedParticipants is used in the approved section below
 
   return (
     <Page className="bg-white">
