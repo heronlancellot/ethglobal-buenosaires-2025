@@ -1,25 +1,104 @@
 'use client';
 
-import { TabItem, Tabs } from '@worldcoin/mini-apps-ui-kit-react';
-import { Bank, Home, User } from 'iconoir-react';
-import { useState } from 'react';
+import { Compass, Calendar, Plus, Bell } from 'iconoir-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { Marble } from '@worldcoin/mini-apps-ui-kit-react';
 
 /**
- * This component uses the UI Kit to navigate between pages
- * Bottom navigation is the most common navigation pattern in Mini Apps
- * We require mobile first design patterns for mini apps
- * Read More: https://docs.world.org/mini-apps/design/app-guidelines#mobile-first
+ * Custom bottom navigation matching the design
+ * Features: Compass (red), Calendar, Plus button (center, red), Bell with notification, Profile
  */
 
 export const Navigation = () => {
-  const [value, setValue] = useState('home');
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const [activeTab, setActiveTab] = useState('home');
+
+  useEffect(() => {
+    // Set active tab based on current pathname
+    if (pathname === '/') {
+      setActiveTab('home');
+    } else if (pathname === '/calendar') {
+      setActiveTab('calendar');
+    } else if (pathname === '/create-experience') {
+      setActiveTab('create-experience');
+    } else if (pathname === '/notifications') {
+      setActiveTab('notifications');
+    } else if (pathname === '/profile') {
+      setActiveTab('profile');
+    }
+  }, [pathname]);
 
   return (
-    <Tabs value={value} onValueChange={setValue}>
-      <TabItem value="home" icon={<Home />} label="Home" />
-      {/* // TODO: These currently don't link anywhere */}
-      <TabItem value="wallet" icon={<Bank />} label="Wallet" />
-      <TabItem value="profile" icon={<User />} label="Profile" />
-    </Tabs>
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+      <div className="flex items-center justify-around px-4 py-2 max-w-md mx-auto">
+        {/* Compass Icon - Red when active */}
+        <button
+          onClick={() => { setActiveTab('home'); router.push('/'); } }
+          className="flex flex-col items-center justify-center p-2 transition-colors"
+          aria-label="Home"
+        >
+          <Compass 
+            className={`w-6 h-6 ${activeTab === 'home' ? 'text-[#db5852]' : 'text-[#757683]'}`} 
+            strokeWidth={2} 
+          />
+        </button>
+
+        {/* Calendar Icon */}
+        <button
+          onClick={() => { setActiveTab('calendar'); router.push('/calendar'); } }
+          className="flex flex-col items-center justify-center p-2 transition-colors"
+          aria-label="Calendar"
+        >
+          <Calendar 
+            className={`w-6 h-6 ${activeTab === 'calendar' ? 'text-[#db5852]' : 'text-[#757683]'}`} 
+            strokeWidth={2} 
+          />
+        </button>
+
+        {/* Plus Button - Large, Red, Circular */}
+        <button
+          onClick={() => { setActiveTab('create-experience'); router.push('/create-experience'); } }
+          className="flex items-center justify-center w-14 h-14 rounded-full bg-[#db5852] text-white shadow-lg hover:bg-[#c94a44] active:bg-[#b73d38] transition-colors"
+          aria-label="Create"
+        >
+          <Plus className="w-7 h-7" strokeWidth={2.5} />
+        </button>
+
+        {/* Bell Icon with Notification Badge */}
+        <button
+          onClick={() => { setActiveTab('notifications'); router.push('/notifications'); } }
+          className="relative flex flex-col items-center justify-center p-2 transition-colors"
+          aria-label="Notifications"
+        >
+          <Bell 
+            className={`w-6 h-6 ${activeTab === 'notifications' ? 'text-[#db5852]' : 'text-[#757683]'}`} 
+            strokeWidth={2} 
+          />
+          <span className="absolute top-0 right-0 w-4 h-4 bg-[#db5852] rounded-full border-2 border-white flex items-center justify-center">
+            <span className="text-white text-[9px] font-bold leading-none">1</span>
+          </span>
+        </button>
+
+        {/* Profile Picture */}
+        <button
+          onClick={() => { setActiveTab('profile'); router.push('/profile'); } }
+          className="flex flex-col items-center justify-center p-2 transition-colors"
+          aria-label="Profile"
+        >
+          {session?.user?.profilePictureUrl ? (
+            <Marble 
+              src={session.user.profilePictureUrl} 
+              className={`w-6 h-6 rounded-full ${activeTab === 'profile' ? 'ring-2 ring-[#db5852]' : ''}`}
+            />
+          ) : (
+            <div className={`w-6 h-6 rounded-full bg-gray-300 ${activeTab === 'profile' ? 'ring-2 ring-[#db5852]' : ''}`} />
+          )}
+        </button>
+      </div>
+    </nav>
   );
 };
