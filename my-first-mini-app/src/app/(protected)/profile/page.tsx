@@ -1,11 +1,9 @@
 'use client';
 
 import { Page } from '@/components/PageLayout';
-import { Marble } from '@worldcoin/mini-apps-ui-kit-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { getUserProfile, getUserApprovedExperiences } from '@/lib/contractUtils';
-import { EditPencil } from 'iconoir-react';
 import Image from 'next/image';
 
 interface NFTItem {
@@ -17,6 +15,11 @@ interface NFTItem {
 }
 
 interface ProfileData {
+  exists: boolean;
+  hostedCount: number;
+  attendedCount: number;
+  lastJoinedTimestamp: number;
+  lastHostedTimestamp: number;
   experiencesCount: number;
   peopleMetCount: number;
   nftGallery: NFTItem[];
@@ -26,6 +29,11 @@ interface ProfileData {
 export default function ProfilePage() {
   const { data: session } = useSession();
   const [profileData, setProfileData] = useState<ProfileData>({
+    exists: false,
+    hostedCount: 0,
+    attendedCount: 0,
+    lastJoinedTimestamp: 0,
+    lastHostedTimestamp: 0,
     experiencesCount: 0,
     peopleMetCount: 0,
     nftGallery: [],
@@ -84,11 +92,16 @@ export default function ProfilePage() {
           },
         ];
 
-        // Use profile data from getProfile (attendedCount from contract)
+        // Use profile data from getProfile
         const experiencesCount = profile.exists ? profile.attendedCount : (approvedExperiences.length || 0);
         const peopleMetCount = profile.exists ? Math.max(profile.attendedCount * 3, 0) : (approvedExperiences.length * 3 || 0);
 
         setProfileData({
+          exists: profile.exists,
+          hostedCount: profile.hostedCount,
+          attendedCount: profile.attendedCount,
+          lastJoinedTimestamp: profile.lastJoinedTimestamp,
+          lastHostedTimestamp: profile.lastHostedTimestamp,
           experiencesCount,
           peopleMetCount,
           nftGallery: mockNFTs,
@@ -105,7 +118,6 @@ export default function ProfilePage() {
 
   const username = session?.user?.username || 'mika_sza';
   const displayName = session?.user?.name || 'Mikaele Santos';
-  const profilePicture = session?.user?.profilePictureUrl;
 
   // Calculate mission progress percentage for circular progress
   const progressPercentage = profileData.missionProgress;
@@ -122,23 +134,6 @@ export default function ProfilePage() {
           
           {/* White Content Area */}
           <div className="bg-white rounded-t-3xl -mt-8 relative pt-16 pb-6">
-            {/* Profile Picture - Overlapping */}
-            <div className="absolute -top-16 left-1/2 flex justify-center w-full transform -translate-x-1/2">
-              <div className="relative">
-                {profilePicture ? (
-                  <Marble 
-                    src={profilePicture} 
-                    className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
-                  />
-                ) : (
-                  <div className="w-32 h-32 rounded-full bg-gray-300 border-4 border-white shadow-lg" />
-                )}
-                {/* Edit Button */}
-                <button className="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border-2 border-gray-200">
-                  <EditPencil className="w-4 h-4 text-[#db5852]" strokeWidth={2.5} />
-                </button>
-              </div>
-            </div>
 
             {/* Name and Username */}
             <div className="text-center mt-4 px-6">
@@ -152,12 +147,16 @@ export default function ProfilePage() {
             {/* Statistics */}
             <div className="flex items-center justify-center gap-8 mt-6 px-6">
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#db5852]">{profileData.experiencesCount}</div>
-                <div className="text-sm text-[#757683] mt-1">Experiences</div>
+                <div className="text-2xl font-bold text-[#db5852]">{profileData.attendedCount}</div>
+                <div className="text-sm text-[#757683] mt-1">Attended</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#db5852]">{profileData.hostedCount}</div>
+                <div className="text-sm text-[#757683] mt-1">Hosted</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-[#db5852]">{profileData.peopleMetCount}</div>
-                <div className="text-sm text-[#757683] mt-1">People Meet</div>
+                <div className="text-sm text-[#757683] mt-1">People Met</div>
               </div>
             </div>
           </div>

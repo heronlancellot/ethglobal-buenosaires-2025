@@ -1,10 +1,11 @@
 'use client';
 
 import { Page } from '@/components/PageLayout';
-import { TopBar } from '@worldcoin/mini-apps-ui-kit-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { WarningTriangle } from 'iconoir-react';
+import Image from 'next/image';
+import NomadBad from '@/assets/NOMADBAD.svg';
 
 interface ReportFormData {
   experienceName: string;
@@ -82,72 +83,19 @@ export default function ReportPage() {
   };
 
   return (
-    <Page className="bg-[#1a3a5c]">
-      <Page.Header className="p-0">
-        <TopBar title="Report" />
-      </Page.Header>
+    <Page className="bg-[#163545]">
 
       <Page.Main className="pb-28 px-4 py-6">
         {/* Header Section */}
         <div className="text-center mb-6">
           <h1 className="text-5xl font-bold text-white mb-4">Oh no!</h1>
           <div className="flex items-start justify-center gap-3 mb-6 px-2">
-            <p className="text-white text-sm leading-relaxed max-w-[240px] text-left">
+            <p className="text-white text-sm leading-relaxed max-w-[240px] text-center">
               This isn&apos;t the experience we aim for. Tell us what happened so we can fix it.
             </p>
             {/* Sad Sun Illustration */}
             <div className="flex-shrink-0 mt-1">
-              <svg
-                width="90"
-                height="90"
-                viewBox="0 0 90 90"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* Sun body */}
-                <circle cx="45" cy="45" r="32" fill="#FFD700" />
-                {/* Sad face */}
-                <circle cx="36" cy="38" r="3.5" fill="#1a3a5c" />
-                <circle cx="54" cy="38" r="3.5" fill="#1a3a5c" />
-                {/* Sad mouth */}
-                <path
-                  d="M 33 52 Q 45 60 57 52"
-                  stroke="#1a3a5c"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                {/* Eyebrows - furrowed */}
-                <path
-                  d="M 30 33 Q 36 30 42 33"
-                  stroke="#1a3a5c"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                <path
-                  d="M 48 33 Q 54 30 60 33"
-                  stroke="#1a3a5c"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                {/* Left arm */}
-                <line x1="13" y1="45" x2="23" y2="40" stroke="#1a3a5c" strokeWidth="3.5" strokeLinecap="round" />
-                <line x1="13" y1="45" x2="23" y2="50" stroke="#1a3a5c" strokeWidth="3.5" strokeLinecap="round" />
-                {/* Right arm with thumbs down */}
-                <line x1="67" y1="45" x2="75" y2="40" stroke="#1a3a5c" strokeWidth="3.5" strokeLinecap="round" />
-                <line x1="67" y1="45" x2="75" y2="50" stroke="#1a3a5c" strokeWidth="3.5" strokeLinecap="round" />
-                {/* Thumbs down hand */}
-                <circle cx="78" cy="32" r="6" fill="#1a3a5c" />
-                <rect x="76" y="26" width="4" height="10" rx="2" fill="#1a3a5c" />
-                {/* Legs */}
-                <line x1="38" y1="77" x2="38" y2="82" stroke="#1a3a5c" strokeWidth="3.5" strokeLinecap="round" />
-                <line x1="52" y1="77" x2="52" y2="82" stroke="#1a3a5c" strokeWidth="3.5" strokeLinecap="round" />
-                {/* Shoes */}
-                <ellipse cx="38" cy="84" rx="5" ry="2.5" fill="#4169E1" />
-                <ellipse cx="52" cy="84" rx="5" ry="2.5" fill="#4169E1" />
-              </svg>
+              <Image src={NomadBad} alt="Nomad Bad" width={100} height={100} />
             </div>
           </div>
         </div>
@@ -207,7 +155,7 @@ export default function ReportPage() {
               name="typeOfIssue"
               value={formData.typeOfIssue}
               onChange={handleInputChange}
-              placeholder="Problem with host, with participant, safety concern, other"
+              placeholder=""
               className={`w-full px-4 py-3 rounded-lg border ${
                 errors.typeOfIssue ? 'border-red-500' : 'border-gray-200'
               } focus:outline-none focus:ring-2 focus:ring-[#db5852] focus:border-transparent text-[#1f1f1f]`}
@@ -250,9 +198,6 @@ export default function ReportPage() {
               placeholder="your.email@example.com"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#db5852] focus:border-transparent text-[#1f1f1f]"
             />
-            <p className="mt-1 text-xs text-[#757683]">
-              Optional: We&apos;ll use this to follow up if needed
-            </p>
           </div>
 
           {/* Submit Button */}
