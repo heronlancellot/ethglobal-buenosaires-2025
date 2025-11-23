@@ -1,8 +1,8 @@
 'use client';
 
 import { Compass, Calendar, Plus, Bell } from 'iconoir-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Marble } from '@worldcoin/mini-apps-ui-kit-react';
 
@@ -13,8 +13,24 @@ import { Marble } from '@worldcoin/mini-apps-ui-kit-react';
 
 export const Navigation = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('home');
+
+  useEffect(() => {
+    // Set active tab based on current pathname
+    if (pathname === '/') {
+      setActiveTab('home');
+    } else if (pathname === '/calendar') {
+      setActiveTab('calendar');
+    } else if (pathname === '/create-experience') {
+      setActiveTab('create-experience');
+    } else if (pathname === '/notifications') {
+      setActiveTab('notifications');
+    } else if (pathname === '/profile') {
+      setActiveTab('profile');
+    }
+  }, [pathname]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
@@ -76,10 +92,10 @@ export const Navigation = () => {
           {session?.user?.profilePictureUrl ? (
             <Marble 
               src={session.user.profilePictureUrl} 
-              className="w-6 h-6 rounded-full"
+              className={`w-6 h-6 rounded-full ${activeTab === 'profile' ? 'ring-2 ring-[#db5852]' : ''}`}
             />
           ) : (
-            <div className="w-6 h-6 rounded-full bg-gray-300" />
+            <div className={`w-6 h-6 rounded-full bg-gray-300 ${activeTab === 'profile' ? 'ring-2 ring-[#db5852]' : ''}`} />
           )}
         </button>
       </div>

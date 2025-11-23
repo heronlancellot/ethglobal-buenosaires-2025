@@ -6,18 +6,20 @@ import { SearchBar } from '@/components/SearchBar';
 import { Navigation } from '@/components/Navigation';
 import { LoginPage } from '@/components/LoginPage';
 import { QrCode } from 'iconoir-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useExperiences } from '@/hooks/useExperiences';
 import { formatUnits } from 'viem';
+import { getUserExperienceStatus } from '@/lib/contractUtils';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
   const { experiences, loading, error } = useExperiences();
   const [searchQuery, setSearchQuery] = useState('');
+  const [eventsWithStatus, setEventsWithStatus] = useState<Event[]>([]);
 
   // Convert blockchain experiences to UI events
-  const events = useMemo(() => {
+  const baseEvents = useMemo(() => {
     return experiences.map((exp): Event => ({
       id: exp.id.toString(),
       title: exp.title,
@@ -28,20 +30,60 @@ export default function HomePage() {
       rating: 4.5, // Default rating - can be fetched from separate contract if available
       image: exp.coverImage || 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=400&fit=crop',
       location: exp.location,
+      status: 'none', // Will be updated
     }));
   }, [experiences]);
 
+  // Fetch status for each experience
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      if (!session?.user || baseEvents.length === 0) {
+        setEventsWithStatus(baseEvents);
+        return;
+      }
+
+      const userAddress = session.user.walletAddress || session.user.id;
+      if (!userAddress) {
+        setEventsWithStatus(baseEvents);
+        return;
+      }
+
+      // Fetch status for all experiences in parallel
+      const eventsWithStatusPromises = baseEvents.map(async (event) => {
+        try {
+          const experienceStatus = await getUserExperienceStatus(
+            Number(event.id),
+            userAddress
+          );
+          return {
+            ...event,
+            status: experienceStatus,
+          };
+        } catch (err) {
+          console.error(`Error fetching status for experience ${event.id}:`, err);
+          return event; // Keep original status if error
+        }
+      });
+
+      const eventsWithStatus = await Promise.all(eventsWithStatusPromises);
+      setEventsWithStatus(eventsWithStatus);
+    };
+
+    fetchStatuses();
+  }, [baseEvents, session]);
+
   // Filtered events based on search
   const filteredEvents = useMemo(() => {
+    const eventsToFilter = eventsWithStatus.length > 0 ? eventsWithStatus : baseEvents;
     if (searchQuery.trim() === '') {
-      return events;
+      return eventsToFilter;
     }
-    return events.filter(
+    return eventsToFilter.filter(
       (event) =>
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [events, searchQuery]);
+  }, [eventsWithStatus, baseEvents, searchQuery]);
 
   // Show login page if not authenticated
   if (status === 'loading') {

@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
       'static.usernames.app-backend.toolsforhumanity.com',
       'images.unsplash.com',
       'cdn-ilddihb.nitrocdn.com',
+      "img.freepik.com",
+      "shop.gustoargentino.com"
     ],
   },
   allowedDevOrigins: ['*'], // Add your dev origin here

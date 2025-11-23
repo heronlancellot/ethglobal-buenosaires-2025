@@ -129,6 +129,8 @@ export default function ExperienceDetailPage() {
     if (transactionId && !isConfirming) {
       if (isConfirmed) {
         console.log('✅ Transaction confirmed! Redirecting to confirmation page...');
+        // Reset loading state
+        setJoinLoading(false);
         // Redirect to confirmation page after successful transaction
         router.push(`/experience/${experienceId}/confirmation`);
       } else if (isError) {
@@ -212,6 +214,8 @@ export default function ExperienceDetailPage() {
       if (finalPayload.status === 'success') {
         console.log('✅ Join request submitted, waiting for confirmation:', finalPayload.transaction_id);
         setTransactionId(finalPayload.transaction_id);
+        // Keep loading state until transaction is confirmed
+        // The useEffect will handle redirect and reset loading state
       } else {
         console.error('❌ Join request failed:', finalPayload);
         setJoinLoading(false);

@@ -1,6 +1,6 @@
 import { createPublicClient, http } from 'viem';
 import { worldchain } from 'viem/chains';
-import { NOMAD_EXPERIENCE_ADDRESS, NOMAD_EXPERIENCE_ABI } from '@/contracts/constants';
+import { NOMAD_EXPERIENCE_ADDRESS, NOMAD_EXPERIENCE_ABI, NOMA_PROFILE_HUB_ADDRESS, NOMA_PROFILE_HUB_ABI } from '@/contracts/constants';
 
 // Create a singleton public client
 const publicClient = createPublicClient({
@@ -179,5 +179,119 @@ export async function getParticipants(experienceId: number) {
   } catch (error) {
     console.error(`Error fetching participants for experience ${experienceId}:`, error);
     throw error;
+  }
+}
+
+/**
+ * Fetch approved experiences for a user
+ */
+export async function getUserApprovedExperiences(userAddress: string) {
+  try {
+    const experienceIds = (await publicClient.readContract({
+      address: NOMAD_EXPERIENCE_ADDRESS,
+      abi: NOMAD_EXPERIENCE_ABI,
+      functionName: 'getUserApprovedExperiences',
+      args: [userAddress as `0x${string}`],
+    })) as readonly bigint[];
+
+    return experienceIds.map((id) => Number(id));
+  } catch (error) {
+    console.error(`Error fetching approved experiences for user ${userAddress}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch requested (pending) experiences for a user
+ */
+export async function getUserRequestedExperiences(userAddress: string) {
+  try {
+    const experienceIds = (await publicClient.readContract({
+      address: NOMAD_EXPERIENCE_ADDRESS,
+      abi: NOMAD_EXPERIENCE_ABI,
+      functionName: 'getUserRequestedExperiences',
+      args: [userAddress as `0x${string}`],
+    })) as readonly bigint[];
+
+    return experienceIds.map((id) => Number(id));
+  } catch (error) {
+    console.error(`Error fetching requested experiences for user ${userAddress}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Check user status for an experience (approved, requested, or none)
+ */
+export async function getUserExperienceStatus(
+  experienceId: number,
+  userAddress: string
+): Promise<'approved' | 'requested' | 'none'> {
+  try {
+    // Check if user is in approved participants
+    const participants = await getParticipants(experienceId);
+    const isApproved = participants.some(
+      (addr) => addr.toLowerCase() === userAddress.toLowerCase()
+    );
+
+    if (isApproved) {
+      return 'approved';
+    }
+
+    // Check if user has a pending join request
+    const joinRequests = await getJoinRequests(experienceId);
+    const hasRequest = joinRequests.some(
+      (addr) => addr.toLowerCase() === userAddress.toLowerCase()
+    );
+
+    if (hasRequest) {
+      return 'requested';
+    }
+
+    return 'none';
+  } catch (error) {
+    console.error(
+      `Error checking user status for experience ${experienceId}:`,
+      error
+    );
+    return 'none';
+  }
+}
+
+/**
+ * Fetch user profile data from NOMA Profile Hub
+ */
+export async function getUserProfile(userAddress: string) {
+  try {
+    const profile = (await publicClient.readContract({
+      address: NOMA_PROFILE_HUB_ADDRESS,
+      abi: NOMA_PROFILE_HUB_ABI,
+      functionName: 'getProfile',
+      args: [userAddress as `0x${string}`],
+    })) as {
+      exists: boolean;
+      hostedCount: bigint;
+      attendedCount: bigint;
+      lastJoinedTimestamp: bigint;
+      lastHostedTimestamp: bigint;
+    };
+
+    return {
+      exists: profile.exists,
+      hostedCount: Number(profile.hostedCount),
+      attendedCount: Number(profile.attendedCount),
+      lastJoinedTimestamp: Number(profile.lastJoinedTimestamp),
+      lastHostedTimestamp: Number(profile.lastHostedTimestamp),
+    };
+  } catch (error) {
+    console.error(`Error fetching profile for user ${userAddress}:`, error);
+    // Return default values if profile doesn't exist or error occurs
+    return {
+      exists: false,
+      hostedCount: 0,
+      attendedCount: 0,
+      lastJoinedTimestamp: 0,
+      lastHostedTimestamp: 0,
+    };
   }
 }
