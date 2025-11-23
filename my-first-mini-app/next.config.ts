@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     domains: [
       'static.usernames.app-backend.toolsforhumanity.com',
       'images.unsplash.com',
+      'cdn-ilddihb.nitrocdn.com',
     ],
   },
   allowedDevOrigins: ['*'], // Add your dev origin here

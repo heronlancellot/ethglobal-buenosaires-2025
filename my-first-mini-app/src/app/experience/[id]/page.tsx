@@ -9,6 +9,8 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { getExperienceDetails } from '@/lib/contractUtils';
 import { formatUnits } from 'viem';
+import { MiniKit } from '@worldcoin/minikit-js';
+import { NOMAD_EXPERIENCE_ADDRESS, NOMAD_EXPERIENCE_ABI } from '@/contracts/constants';
 
 interface ExperienceData {
   id: string;
@@ -125,6 +127,36 @@ export default function ExperienceDetailPage() {
     );
   };
 
+  const handleRequestJoin = async (experienceId: bigint) => {
+    try {
+      // Parse price from experience (remove '$' and convert to wei)
+      const priceInUSD = parseFloat(experience.price.replace('$', ''));
+      const priceInWei = BigInt(Math.floor(priceInUSD * 1e18));
+      // Convert to hex string for MiniKit
+      const priceInHex = '0x' + priceInWei.toString(16);
+
+      const { finalPayload } = await MiniKit.commandsAsync.sendTransaction({
+        transaction: [
+          {
+            address: NOMAD_EXPERIENCE_ADDRESS,
+            abi: NOMAD_EXPERIENCE_ABI,
+            functionName: 'requestJoin',
+            args: [experienceId],
+            value: priceInHex,
+          },
+        ],
+      });
+      console.log('Join request response:', finalPayload);
+      if (finalPayload.status === 'success') {
+        console.log('Join request submitted, waiting for confirmation:', finalPayload.transaction_id);
+      } else {
+        console.error('Join request failed:', finalPayload);
+      }
+    } catch (error) {
+      console.error('Error requesting join:', error);
+    }
+  };
+
   return (
     <Page className="bg-white">
       {/* Image Carousel */}
@@ -181,7 +213,11 @@ export default function ExperienceDetailPage() {
               {experience.rating} Rating ({experience.ratingCount})
             </p>
           </div>
-          <button className="bg-[#db5852] hover:bg-[#c94a44] active:bg-[#b73d38] text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+          <button className="bg-[#db5852] hover:bg-[#c94a44] active:bg-[#b73d38] text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+          onClick={() => {
+            handleRequestJoin(BigInt(experience.id));
+          }}
+          >
             Confirm
           </button>
         </div>

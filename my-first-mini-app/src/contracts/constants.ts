@@ -1,7 +1,25 @@
 /**NEW CONTRACTS */
-export const NOMAD_EXPERIENCE_ADDRESS = "0xB544f8A4D138832ac17d0e3a133aBD940E7D47E3" as `0x${string}`
+export const NOMAD_EXPERIENCE_ADDRESS = "0x33Ffd16F289173af1D1e5948Fc1443ac7FF63e92" as `0x${string}`
 
 export const NOMAD_EXPERIENCE_ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "approveJoin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [
 			{
@@ -17,13 +35,13 @@ export const NOMAD_EXPERIENCE_ABI = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
 			},
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "address",
 				"name": "creator",
 				"type": "address"
@@ -103,13 +121,13 @@ export const NOMAD_EXPERIENCE_ABI = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
 			},
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "address",
 				"name": "creator",
 				"type": "address"
@@ -122,19 +140,82 @@ export const NOMAD_EXPERIENCE_ABI = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
 			},
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
 				"indexed": false,
+				"internalType": "uint8",
+				"name": "rating",
+				"type": "uint8"
+			}
+		],
+		"name": "ExperienceRated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
 				"internalType": "address",
 				"name": "user",
 				"type": "address"
 			}
 		],
-		"name": "Joined",
+		"name": "JoinApproved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "JoinRejected",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "JoinRequested",
 		"type": "event"
 	},
 	{
@@ -143,9 +224,45 @@ export const NOMAD_EXPERIENCE_ABI = [
 				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint8",
+				"name": "rating",
+				"type": "uint8"
 			}
 		],
-		"name": "joinExperience",
+		"name": "rateExperience",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "rejectJoin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "requestJoin",
 		"outputs": [],
 		"stateMutability": "payable",
 		"type": "function"
@@ -154,7 +271,7 @@ export const NOMAD_EXPERIENCE_ABI = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
@@ -273,6 +390,30 @@ export const NOMAD_EXPERIENCE_ABI = [
 				"internalType": "uint256",
 				"name": "participantCount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "averageRating",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "getJoinRequests",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -292,6 +433,44 @@ export const NOMAD_EXPERIENCE_ABI = [
 				"internalType": "address[]",
 				"name": "",
 				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getUserApprovedExperiences",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getUserRequestedExperiences",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",
